@@ -185,12 +185,11 @@
 
      deleteClick: function(event){
 
-       //listOfratings.removeChild(listOfratings.lastChild);
-       //console.log("Viimane element kustutatud!");
-
        var json = localStorage.getItem("ratings");
        var json2 = JSON.parse(json);
        json2.pop();
+       listOfratings.removeChild(listOfratings.lastChild);
+       console.log("Viimane element kustutatud!");
        localStorage.setItem('ratings', JSON.stringify(json2));
 
        //localStorage.clear(); // See teeb terve localStorage tühjaks
