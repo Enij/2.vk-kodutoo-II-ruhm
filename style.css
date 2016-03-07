@@ -87,7 +87,7 @@ main > *:target ~ * {
     float: right;
 }
 .title,
-.ingredients {
+.context {
     width: 100%;
     margin-bottom: 10px;
     margin-top: 4px;
@@ -95,7 +95,7 @@ main > *:target ~ * {
     border: 0;
     border-bottom: 1px solid rgb(146, 168, 209);
 }
-.add-new-jar, .modify-jar, .delete-jar {
+.add-new-rating, .modify-rating, .delete-rating {
     background-color: #fff;
     padding: 10px;
     border: 2px solid rgb(146, 168, 209);
@@ -117,11 +117,11 @@ td {
     color: rgb(146, 168, 209);
     border: 1px solid rgb(146, 168, 209);
 }
-.list-of-jars {
+.list-of-ratings {
     list-style-type: none;
     padding-left: 0;
 }
-.list-of-jars li {
+.list-of-ratings li {
     margin-bottom: 10px;
 
 }

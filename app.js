@@ -21,7 +21,7 @@
      //console.log(this);
 
      // hakkan hoidma kõiki purke
-     this.jars = [];
+     this.ratings = [];
 
      // Kui tahan Moosipurgile referenci siis kasutan THIS = MOOSIPURGI RAKENDUS ISE
      this.init();
@@ -34,6 +34,9 @@
        'render': function(){
          // käivitame siis kui lehte laeme
          //console.log('>>>>avaleht');
+         /*document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: ";
+         document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: ";
+         document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: ";*/
        }
      },
      'list-view': {
@@ -74,18 +77,18 @@
        }
 
        //saan kätte purgid localStorage kui on
-       if(localStorage.jars){
+       if(localStorage.ratings){
            //võtan stringi ja teen tagasi objektideks
-           this.jars = JSON.parse(localStorage.jars);
-           console.log('Laadisin localStorageist massiivi ' + this.jars.length);
+           this.ratings = JSON.parse(localStorage.ratings);
+           console.log('Laadisin localStorageist massiivi ' + this.ratings.length);
 
            //tekitan loendi htmli
-           this.jars.forEach(function(jar){
+           this.ratings.forEach(function(jar){
 
-               var new_jar = new Jar(jar.title, jar.ingredients);
+               var new_jar = new Jar(jar.title, jar.context);
 
                var li = new_jar.createHtmlElement();
-               document.querySelector('.list-of-jars').appendChild(li);
+               document.querySelector('.list-of-ratings').appendChild(li);
 
            });
 
@@ -98,9 +101,9 @@
      },
 
      bindEvents: function(){
-       document.querySelector('.add-new-jar').addEventListener('click', this.addNewClick.bind(this));
-       document.querySelector('.delete-jar').addEventListener('click', this.deleteClick.bind(this));
-       document.querySelector('.modify-jar').addEventListener('click', this.modifyClick.bind(this));
+       document.querySelector('.add-new-rating').addEventListener('click', this.addNewClick.bind(this));
+       document.querySelector('.delete-rating').addEventListener('click', this.deleteClick.bind(this));
+       document.querySelector('.modify-rating').addEventListener('click', this.modifyClick.bind(this));
 
        //kuulan trükkimist otsikastis
        //document.querySelector('#search').addEventListener('keyup', this.search.bind(this));
@@ -112,7 +115,7 @@
          var needle = document.querySelector('#search').value.toLowerCase();
          console.log(needle);
 
-         var list = document.querySelectorAll('ul.list-of-jars li');
+         var list = document.querySelectorAll('ul.list-of-ratings li');
          console.log(list);
 
          for(var i = 0; i < list.length; i++){
@@ -141,59 +144,33 @@
        //console.log(event);
 
        var title = document.querySelector('.title').value;
-       var ingredients = document.querySelector('.ingredients').value;
+       var context = document.querySelector('.context').value;
 
-       //console.log(title + ' ' + ingredients);
+       //console.log(title + ' ' + context);
        //1) tekitan uue Jar'i
-       var new_jar = new Jar(title, ingredients);
+       var new_jar = new Jar(title, context);
 
        //lisan massiiivi purgi
-       this.jars.push(new_jar);
-       console.log(JSON.stringify(this.jars));
+       this.ratings.push(new_jar);
+       console.log(JSON.stringify(this.ratings));
        // JSON'i stringina salvestan localStorage'isse
-       localStorage.setItem('jars', JSON.stringify(this.jars));
+       localStorage.setItem('ratings', JSON.stringify(this.ratings));
 
        // 2) lisan selle htmli listi juurde
        var li = new_jar.createHtmlElement();
-       document.querySelector('.list-of-jars').appendChild(li);
-
-       document.querySelector('#valueAmount').innerHTML = this.jars.length;
-     },
-
-     deleteClick: function(event){
-       //kustutan viimase elemendi
-
-       //listOfJars.removeChild(listOfJars.lastChild);
-       //console.log("Viimane element kustutatud!");
-
-       console.log(this.jars);
-       var json = localStorage.getItem("jars");
-       //console.log(json);
-       var json2 = JSON.parse(json);
-       //console.log(json2);
-       //JSON.parse(localStorage[this.jars]);
-       for (var i=0; i<json2.length; i++){
-         //console.log(i);
-         if (json2[i] == (json2.length-1)){ //Küsida selle osa kohta, kuidas kustutada üks element, kontrollida antud osa üle. Tähtaeg 7.03 aka 8.03 hommik k.a?
-             //json2.splice(i, 1);
-             //localStorage.removeItem(json2[i]);
-             localStorage.setItem('jars', JSON.stringify(json2));
-         }
-         //console.log(json2);
-       }
+       document.querySelector('.list-of-ratings').appendChild(li);
 
        var positiveCount = 0;
        var negativeCount = 0;
-       for(var j = 0; j < this.jars.length; ++j){
-         if(this.jars[j].title == "Positiivne" || this.jars[j].title == "Pos" || this.jars[j].title == "pos" || this.jars[j].title == "+"){
+       for(var j = 0; j < this.ratings.length; ++j){
+         if(this.ratings[j].title == "Positiivne" || this.ratings[j].title == "Pos" || this.ratings[j].title == "pos" || this.ratings[j].title == "+"){
            positiveCount++;
-         }if(this.jars[j].title == "Negatiivne" || this.jars[j].title == "Neg" || this.jars[j].title == "neg" || this.jars[j].title == "-"){
+         }if(this.ratings[j].title == "Negatiivne" || this.ratings[j].title == "Neg" || this.ratings[j].title == "neg" || this.ratings[j].title == "-"){
            negativeCount++;
          }
-         //console.log(positiveCount + " + " + negativeCount);
        }
 
-       document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: " + this.jars.length;
+       document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: " + this.ratings.length;
        document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: " + positiveCount;
        document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: " + negativeCount;
        if(positiveCount > negativeCount){
@@ -204,13 +181,50 @@
          document.querySelector('#valuation').innerHTML = "Oleks saanud paremini.";
        }
 
-       //localStorage.clear();
+     },
+
+     deleteClick: function(event){
+
+       //listOfratings.removeChild(listOfratings.lastChild);
+       //console.log("Viimane element kustutatud!");
+
+       var json = localStorage.getItem("ratings");
+       var json2 = JSON.parse(json);
+       json2.pop();
+       localStorage.setItem('ratings', JSON.stringify(json2));
+
+       //localStorage.clear(); // See teeb terve localStorage tühjaks
+
+       var positiveCount = 0;
+       var negativeCount = 0;
+       for(var j = 0; j < this.ratings.length; ++j){
+         if(this.ratings[j].title == "Positiivne" || this.ratings[j].title == "Pos" || this.ratings[j].title == "pos" || this.ratings[j].title == "+"){
+           positiveCount++;
+         }if(this.ratings[j].title == "Negatiivne" || this.ratings[j].title == "Neg" || this.ratings[j].title == "neg" || this.ratings[j].title == "-"){
+           negativeCount++;
+         }
+       }
+
+       /*console.log("pressed delete");
+       console.log(positiveCount);
+       console.log(negativeCount);*/
+
+       document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: " + this.ratings.length;
+       document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: " + positiveCount;
+       document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: " + negativeCount;
+       if(positiveCount > negativeCount){
+         document.querySelector('#valuation').innerHTML = "Olid tubli!";
+       }else if(positiveCount == negativeCount){
+         document.querySelector('#valuation').innerHTML = "Ei ole kõige hullem.";
+       }else{
+         document.querySelector('#valuation').innerHTML = "Oleks saanud paremini.";
+       }
 
      },
 
      modifyClick: function(event){
        // muudan elementi
-       var x = document.getElementById("listOfJars").lastElementChild.innerHTML;
+       var x = document.getElementById("listOfratings").lastElementChild.innerHTML;
        console.log(x);
      },
 
@@ -227,7 +241,6 @@
          this.updateMenu();
 
          this.routes[this.currentRoute].render();
-
 
        }else{
          /// 404 - ei olnud
@@ -249,22 +262,22 @@
 
    }; // MOOSIPURGI LÕPP
 
-   var Jar = function(new_title, new_ingredients){
+   var Jar = function(new_title, new_context){
      this.title = new_title;
-     this.ingredients = new_ingredients;
-     console.log('created new jar');
+     this.context = new_context;
+     console.log('created new rating');
    };
 
    Jar.prototype = {
      createHtmlElement: function(){
 
-       // võttes title ja ingredients ->
+       // võttes title ja context ->
        /*
        li
         span.letter
           M <- title esimene täht
         span.content
-          title | ingredients
+          title | context
        */
 
        var li = document.createElement('li');
@@ -280,7 +293,7 @@
        var span_with_content = document.createElement('span');
        span_with_content.className = 'content';
 
-       var content = document.createTextNode(this.title + ' | ' + this.ingredients);
+       var content = document.createTextNode(this.title + ' | ' + this.context);
        span_with_content.appendChild(content);
 
        li.appendChild(span_with_content);
