@@ -1,182 +1,275 @@
 (function(){
-  "use strict";
+   "use strict";
+
+   var Enesehinnang = function(){
+
+     // SEE ON SINGLETON PATTERN
+     if(Enesehinnang.instance){
+       return Enesehinnang.instance;
+     }
+     //this viitab Enesehinnang fn
+     Enesehinnang.instance = this;
+
+     this.routes = Enesehinnang.routes;
+     // this.routes['home-view'].render()
+
+     //console.log('moosipurgi sees');
+
+     // KÕIK muuutujad, mida muudetakse ja on rakendusega seotud defineeritakse siin
+     this.click_count = 0;
+     this.currentRoute = null;
+     //console.log(this);
+
+     // hakkan hoidma kõiki purke
+     this.jars = [];
+
+     // Kui tahan Moosipurgile referenci siis kasutan THIS = MOOSIPURGI RAKENDUS ISE
+     this.init();
+   };
+
+   window.Enesehinnang = Enesehinnang; // Paneme muuutja külge
+
+   Enesehinnang.routes = {
+     'home-view': {
+       'render': function(){
+         // käivitame siis kui lehte laeme
+         //console.log('>>>>avaleht');
+       }
+     },
+     'list-view': {
+       'render': function(){
+         // käivitame siis kui lehte laeme
+         //console.log('>>>>loend');
+
+         //simulatsioon laeb kaua
+         window.setTimeout(function(){
+           document.querySelector('.loading').innerHTML = 'Laetud!';
+         }, 3000);
+
+       }
+     },
+     'manage-view': {
+       'render': function(){
+         // käivitame siis kui lehte laeme
+       }
+     }
+   };
+
+   // Kõik funktsioonid lähevad Moosipurgi külge
+   Enesehinnang.prototype = {
+
+     init: function(){
+       console.log('Rakendus läks tööle!');
+
+       //kuulan aadressirea vahetust
+       window.addEventListener('hashchange', this.routeChange.bind(this));
+
+       // kui aadressireal ei ole hashi siis lisan juurde
+       if(!window.location.hash){
+         window.location.hash = 'home-view';
+         // routechange siin ei ole vaja sest käsitsi muutmine käivitab routechange event'i ikka
+       }else{
+         //esimesel käivitamisel vaatame urli üle ja uuendame menüüd
+         this.routeChange();
+       }
+
+       //saan kätte purgid localStorage kui on
+       if(localStorage.jars){
+           //võtan stringi ja teen tagasi objektideks
+           this.jars = JSON.parse(localStorage.jars);
+           console.log('Laadisin localStorageist massiivi ' + this.jars.length);
+
+           //tekitan loendi htmli
+           this.jars.forEach(function(jar){
+
+               var new_jar = new Jar(jar.title, jar.ingredients);
+
+               var li = new_jar.createHtmlElement();
+               document.querySelector('.list-of-jars').appendChild(li);
+
+           });
+
+       }
 
 
-  var Moosipurk = function(){
+       // esimene loogika oleks see, et kuulame hiireklikki nupul
+       this.bindEvents();
 
-    // SINGLETON PATTERN (4 rida)
-    if(Moosipurk.instance){
-      return Moosipurk.instance;
-    }
-    Moosipurk.instance = this; // this viitab moosipurgile
+     },
 
-    this.routes = Moosipurk.routes;
+     bindEvents: function(){
+       document.querySelector('.add-new-jar').addEventListener('click', this.addNewClick.bind(this));
+       document.querySelector('.delete-jar').addEventListener('click', this.deleteClick.bind(this));
+       document.querySelector('.modify-jar').addEventListener('click', this.modifyClick.bind(this));
 
-    console.log(this);
-    //console.log('moosipurgi sees');
+       //kuulan trükkimist otsikastis
+       //document.querySelector('#search').addEventListener('keyup', this.search.bind(this));
 
-    // KÕIK MUUTUJAD, mis on üldised ja muudetavad
-    this.currentRoute = null; // hoian meeles mis lehel olen (home-view, ...)
-    this.interval = null;
+     },
 
+     search: function(event){
+         //otsikasti väärtus
+         var needle = document.querySelector('#search').value.toLowerCase();
+         console.log(needle);
 
+         var list = document.querySelectorAll('ul.list-of-jars li');
+         console.log(list);
 
-    //panen rakenduse tööle
-    this.init();
-  };
+         for(var i = 0; i < list.length; i++){
 
-  // kirjeldatud kõik lehed
-  Moosipurk.routes = {
-    "home-view": {
-      render: function(){
-        // käivitan siis kui jõuan lehele
-        console.log('JS avalehel');
+             var li = list[i];
 
-        // kui olemas, teen nulliks
-        if(this.interval){ clearInterval(this.interval); }
+             // ühe listitemi sisu tekst
+             var stack = li.querySelector('.content').innerHTML.toLowerCase();
 
-        // kui jõuan avalehele siis käivitub timer, mis hakkab trükkima kulunud sekundeid
-        // divi sisse #counter
-        // hakkab 0st
-        var seconds = 0;
-        this.interval = window.setInterval(function(){
-          seconds++;
-          document.querySelector('#counter').innerHTML = seconds;
-        }, 1000); //iga 1000ms tagant käivitub
+             //kas otsisõna on sisus olemas
+             if(stack.indexOf(needle) !== -1){
+                 //olemas
+                 li.style.display = 'list-item';
 
-      }
-    },
-    "list-view": {
-      render: function(){
-        console.log('JS loendi lehel');
+             }else{
+                 //ei ole, index on -1, peidan
+                 li.style.display = 'none';
 
-      }
-    },
-    "manage-view": {
-      render: function(){
-        console.log('JS halduse lehel');
+             }
 
-      }
-    }
-  };
+         }
+     },
 
-  //kõik moosipurgi funktsioonid tulevad siia sisse
-  Moosipurk.prototype = {
-    init: function(){
-      console.log('rakendus käivitus');
-      // Siia tuleb esialgne loogika
+     addNewClick: function(event){
+       //salvestame purgi
+       //console.log(event);
 
-      window.addEventListener('hashchange', this.routeChange.bind(this));
+       var title = document.querySelector('.title').value;
+       var ingredients = document.querySelector('.ingredients').value;
 
-      //vaatan mis lehel olen, kui ei ole hashi lisan avalehe
-      console.log(window.location.hash);
-      if(!window.location.hash){
-        window.location.hash = "home-view";
-      }else{
-        //hash oli olemas, käivitan routeChange fn
-        this.routeChange();
+       //console.log(title + ' ' + ingredients);
+       //1) tekitan uue Jar'i
+       var new_jar = new Jar(title, ingredients);
 
-      }
+       //lisan massiiivi purgi
+       this.jars.push(new_jar);
+       console.log(JSON.stringify(this.jars));
+       // JSON'i stringina salvestan localStorage'isse
+       localStorage.setItem('jars', JSON.stringify(this.jars));
 
+       // 2) lisan selle htmli listi juurde
+       var li = new_jar.createHtmlElement();
+       document.querySelector('.list-of-jars').appendChild(li);
 
-      // hakka kuulama hiireklõpse
-      this.bindMouseEvents();
-    },
+     },
 
-    bindMouseEvents: function(){
-      document.querySelector('.add-new-jar').addEventListener('click', this.addNewClick.bind(this));
-    },
-    addNewClick: function(event){
-      // lisa uus purk
-      var title = document.querySelector('.title').value;
-      var ingredients = document.querySelector('.ingredients').value;
-      console.log(title + ' ' + ingredients);
+     deleteClick: function(event){
+       //kustutan viimase elemendi
 
+       //listOfJars.removeChild(listOfJars.lastChild);
+       //console.log("Viimane element kustutatud!");
 
+       console.log(this.jars);
+       var json = localStorage.getItem("jars");
+       console.log(json);
+       var json2 = JSON.parse(json);
+       console.log(json2);
+       //JSON.parse(localStorage[this.jars]);
+       for (var i=0; i<json2.length; i++){
+         console.log(i);
+         if (json2[i] == (json2.length-1)){
+             //json2.splice(i, 1);
+             //localStorage.removeItem(json2[i]);
+             localStorage.setItem('jars', JSON.stringify(json2));
+         }
+         console.log(json2);
+       }
 
-      var new_jar = new Jar(title, ingredients);
-      var li = new_jar.createHtmlElement();
-      document.querySelector('.list-of-jars').appendChild(li);
+       //localStorage.clear();
 
+     },
 
-    },
-    routeChange: function(event){
+     modifyClick: function(event){
+       // muudan elementi
+       var x = document.getElementById("listOfJars").lastElementChild.innerHTML;
+       console.log(x);
+     },
 
-      // slice võtab võtab # ära #home-view >> home-view
-      this.currentRoute = window.location.hash.slice(1);
+     routeChange: function(event){
 
-      // kas leht on olemas
-      if(this.routes[this.currentRoute]){
-        //jah
+       //kirjutan muuutujasse lehe nime, võtan maha #
+       this.currentRoute = location.hash.slice(1);
+       //console.log(this.currentRoute);
 
-        this.updateMenu();
+       //kas meil on selline leht olemas?
+       if(this.routes[this.currentRoute]){
 
-        console.log('>>> ' + this.currentRoute);
-        //käivitan selle lehe jaoks ettenähtud js
-        this.routes[this.currentRoute].render();
-      }else{
-        // 404?
-        console.log('404');
-        window.location.hash = 'home-view';
-      }
+         //muudan menüü lingi aktiivseks
+         this.updateMenu();
 
-    },
-
-    updateMenu: function(){
-
-      //kui on mingil menüül klass active-menu siis võtame ära
-      document.querySelector('.active-menu').className = document.querySelector('.active-menu').className.replace(' active-menu', '');
-
-      //käesolevale lehele lisan juurde
-      document.querySelector('.' + this.currentRoute).className += ' active-menu';
-
-    }
-
-  };
+         this.routes[this.currentRoute].render();
 
 
-  var Jar = function(new_title, new_ingredients){
-    this.title = new_title;
-    this.ingredients = new_ingredients;
-  };
-
-  Jar.prototype = {
-    createHtmlElement: function(){
-      // anda tagasi ilus html
-
-      // li
-      //   span.letter
-      //     M
-      //   span.content
-      //     Maasikamoos | maasikas, õun
-
-      var li = document.createElement('li');
-
-      var span = document.createElement('span');
-      span.className = 'letter';
-
-      var letter = document.createTextNode(this.title.charAt(0));
-      span.appendChild(letter);
-
-      li.appendChild(span);
-
-      var content_span = document.createElement('span');
-      content_span.className = 'content';
-
-      var content = document.createTextNode(this.title + ' | ' + this.ingredients);
-      content_span.appendChild(content);
-
-      li.appendChild(content_span);
-
-      console.log(li);
-
-      return li;
-    }
-  };
+       }else{
+         /// 404 - ei olnud
+       }
 
 
-  window.onload = function(){
-    var app = new Moosipurk();
-  };
+     },
+
+     updateMenu: function() {
+       //http://stackoverflow.com/questions/195951/change-an-elements-class-with-javascript
+       //1) võtan maha aktiivse menüülingi kui on
+       document.querySelector('.active-menu').className = document.querySelector('.active-menu').className.replace('active-menu', '');
+
+       //2) lisan uuele juurde
+       //console.log(location.hash);
+       document.querySelector('.'+this.currentRoute).className += ' active-menu';
+
+     }
+
+   }; // MOOSIPURGI LÕPP
+
+   var Jar = function(new_title, new_ingredients){
+     this.title = new_title;
+     this.ingredients = new_ingredients;
+     console.log('created new jar');
+   };
+
+   Jar.prototype = {
+     createHtmlElement: function(){
+
+       // võttes title ja ingredients ->
+       /*
+       li
+        span.letter
+          M <- title esimene täht
+        span.content
+          title | ingredients
+       */
+
+       var li = document.createElement('li');
+
+       var span = document.createElement('span');
+       span.className = 'letter';
+
+       var letter = document.createTextNode(this.title.charAt(0));
+       span.appendChild(letter);
+
+       li.appendChild(span);
+
+       var span_with_content = document.createElement('span');
+       span_with_content.className = 'content';
+
+       var content = document.createTextNode(this.title + ' | ' + this.ingredients);
+       span_with_content.appendChild(content);
+
+       li.appendChild(span_with_content);
+
+       return li;
+
+     }
+   };
+
+   // kui leht laetud käivitan Moosipurgi rakenduse
+   window.onload = function(){
+     var app = new Enesehinnang();
+   };
 
 })();

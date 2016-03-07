@@ -95,7 +95,7 @@ main > *:target ~ * {
     border: 0;
     border-bottom: 1px solid rgb(146, 168, 209);
 }
-.add-new-jar {
+.add-new-jar, .modify-jar, .delete-jar {
     background-color: #fff;
     padding: 10px;
     border: 2px solid rgb(146, 168, 209);
