@@ -157,6 +157,7 @@
        var li = new_jar.createHtmlElement();
        document.querySelector('.list-of-jars').appendChild(li);
 
+       document.querySelector('#valueAmount').innerHTML = this.jars.length;
      },
 
      deleteClick: function(event){
@@ -167,18 +168,40 @@
 
        console.log(this.jars);
        var json = localStorage.getItem("jars");
-       console.log(json);
+       //console.log(json);
        var json2 = JSON.parse(json);
-       console.log(json2);
+       //console.log(json2);
        //JSON.parse(localStorage[this.jars]);
        for (var i=0; i<json2.length; i++){
-         console.log(i);
-         if (json2[i] == (json2.length-1)){
+         //console.log(i);
+         if (json2[i] == (json2.length-1)){ //Küsida selle osa kohta, kuidas kustutada üks element, kontrollida antud osa üle. Tähtaeg 7.03 aka 8.03 hommik k.a?
              //json2.splice(i, 1);
              //localStorage.removeItem(json2[i]);
              localStorage.setItem('jars', JSON.stringify(json2));
          }
-         console.log(json2);
+         //console.log(json2);
+       }
+
+       var positiveCount = 0;
+       var negativeCount = 0;
+       for(var j = 0; j < this.jars.length; ++j){
+         if(this.jars[j].title == "Positiivne" || this.jars[j].title == "Pos" || this.jars[j].title == "pos" || this.jars[j].title == "+"){
+           positiveCount++;
+         }if(this.jars[j].title == "Negatiivne" || this.jars[j].title == "Neg" || this.jars[j].title == "neg" || this.jars[j].title == "-"){
+           negativeCount++;
+         }
+         //console.log(positiveCount + " + " + negativeCount);
+       }
+
+       document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: " + this.jars.length;
+       document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: " + positiveCount;
+       document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: " + negativeCount;
+       if(positiveCount > negativeCount){
+         document.querySelector('#valuation').innerHTML = "Olid tubli!";
+       }else if(positiveCount == negativeCount){
+         document.querySelector('#valuation').innerHTML = "Ei ole kõige hullem.";
+       }else{
+         document.querySelector('#valuation').innerHTML = "Oleks saanud paremini.";
        }
 
        //localStorage.clear();
