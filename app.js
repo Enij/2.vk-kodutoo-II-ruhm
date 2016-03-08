@@ -113,10 +113,10 @@
      search: function(event){
          //otsikasti väärtus
          var needle = document.querySelector('#search').value.toLowerCase();
-         console.log(needle);
+         //console.log(needle);
 
          var list = document.querySelectorAll('ul.list-of-ratings li');
-         console.log(list);
+         //console.log(list);
 
          for(var i = 0; i < list.length; i++){
 
@@ -152,21 +152,22 @@
 
        //lisan massiiivi purgi
        this.ratings.push(new_jar);
-       console.log(JSON.stringify(this.ratings));
+       //console.log(JSON.stringify(this.ratings));
        // JSON'i stringina salvestan localStorage'isse
        localStorage.setItem('ratings', JSON.stringify(this.ratings));
 
        // 2) lisan selle htmli listi juurde
        var li = new_jar.createHtmlElement();
        document.querySelector('.list-of-ratings').appendChild(li);
-       console.log(this.ratings.length);
+       console.log("Uus element lisatud!");
+       //console.log(this.ratings.length);
 
        var positiveCount = 0;
        var negativeCount = 0;
        for(var j = 0; j < this.ratings.length; ++j){
-         if(this.ratings[j].title == "Positiivne" || this.ratings[j].title == "Pos" || this.ratings[j].title == "pos" || this.ratings[j].title == "+"){
+         if(this.ratings[j].title == "Positiivne" || this.ratings[j].title == "positiivne" || this.ratings[j].title == "Pos" || this.ratings[j].title == "pos" || this.ratings[j].title == "+"){
            positiveCount++;
-         }if(this.ratings[j].title == "Negatiivne" || this.ratings[j].title == "Neg" || this.ratings[j].title == "neg" || this.ratings[j].title == "-"){
+         }if(this.ratings[j].title == "Negatiivne" || this.ratings[j].title == "negatiivne" || this.ratings[j].title == "Neg" || this.ratings[j].title == "neg" || this.ratings[j].title == "-"){
            negativeCount++;
          }
        }
@@ -192,16 +193,16 @@
        listOfratings.removeChild(listOfratings.lastChild);
        console.log("Viimane element kustutatud!");
        localStorage.setItem('ratings', JSON.stringify(json2));
-       console.log(json2.length);
+       //console.log(json2.length);
 
        //localStorage.clear(); // See teeb terve localStorage tühjaks
 
        var positiveCount = 0;
        var negativeCount = 0;
        for(var j = 0; j < json2.length; ++j){
-         if(json2[j].title == "Positiivne" || json2[j].title == "Pos" || json2[j].title == "pos" || json2[j].title == "+"){
+         if(json2[j].title == "Positiivne" || json2[j].title == "positiivne" || json2[j].title == "Pos" || json2[j].title == "pos" || json2[j].title == "+"){
            positiveCount++;
-         }if(json2[j].title == "Negatiivne" || json2[j].title == "Neg" || json2[j].title == "neg" || json2[j].title == "-"){
+         }if(json2[j].title == "Negatiivne" || json2[j].title == "negatiivne" || json2[j].title == "Neg" || json2[j].title == "neg" || json2[j].title == "-"){
            negativeCount++;
          }
        }
@@ -266,7 +267,7 @@
    var Jar = function(new_title, new_context){
      this.title = new_title;
      this.context = new_context;
-     console.log('created new rating');
+     //console.log('created new rating');
    };
 
    Jar.prototype = {
@@ -287,6 +288,15 @@
        span.className = 'letter';
 
        var letter = document.createTextNode(this.title.charAt(0));
+       if(this.title.charAt(0) == "P" || this.title.charAt(0) == "p" || this.title.charAt(0) == "+"){
+         //console.log("green");
+         span.style.color = "#1FCF3F";
+         span.style.borderColor = "#1FCF3F";
+       }else if(this.title.charAt(0) == "N" || this.title.charAt(0) == "n" || this.title.charAt(0) == "-"){
+         //console.log("red");
+         span.style.color =  "#F50C33";
+         span.style.borderColor =  "#F50C33";
+       }
        span.appendChild(letter);
 
        li.appendChild(span);
