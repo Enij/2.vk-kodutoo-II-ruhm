@@ -159,6 +159,7 @@
        // 2) lisan selle htmli listi juurde
        var li = new_jar.createHtmlElement();
        document.querySelector('.list-of-ratings').appendChild(li);
+       console.log(this.ratings.length);
 
        var positiveCount = 0;
        var negativeCount = 0;
@@ -170,7 +171,7 @@
          }
        }
 
-       document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: " + this.ratings.length;
+       document.querySelector('#valueAmount').innerHTML = "Kokku on loenduris punkte: " + this.ratings.length;
        document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: " + positiveCount;
        document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: " + negativeCount;
        if(positiveCount > negativeCount){
@@ -191,15 +192,16 @@
        listOfratings.removeChild(listOfratings.lastChild);
        console.log("Viimane element kustutatud!");
        localStorage.setItem('ratings', JSON.stringify(json2));
+       console.log(json2.length);
 
        //localStorage.clear(); // See teeb terve localStorage tühjaks
 
        var positiveCount = 0;
        var negativeCount = 0;
-       for(var j = 0; j < this.ratings.length; ++j){
-         if(this.ratings[j].title == "Positiivne" || this.ratings[j].title == "Pos" || this.ratings[j].title == "pos" || this.ratings[j].title == "+"){
+       for(var j = 0; j < json2.length; ++j){
+         if(json2[j].title == "Positiivne" || json2[j].title == "Pos" || json2[j].title == "pos" || json2[j].title == "+"){
            positiveCount++;
-         }if(this.ratings[j].title == "Negatiivne" || this.ratings[j].title == "Neg" || this.ratings[j].title == "neg" || this.ratings[j].title == "-"){
+         }if(json2[j].title == "Negatiivne" || json2[j].title == "Neg" || json2[j].title == "neg" || json2[j].title == "-"){
            negativeCount++;
          }
        }
@@ -208,7 +210,7 @@
        console.log(positiveCount);
        console.log(negativeCount);*/
 
-       document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: " + this.ratings.length;
+       document.querySelector('#valueAmount').innerHTML = "Kokku on loenduris punkte: " + json2.length;
        document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: " + positiveCount;
        document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: " + negativeCount;
        if(positiveCount > negativeCount){
