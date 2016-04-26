@@ -34,9 +34,6 @@
        'render': function(){
          // käivitame siis kui lehte laeme
          //console.log('>>>>avaleht');
-         /*document.querySelector('#valueAmount').innerHTML = "Kokku oli loenduris punkte: ";
-         document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: ";
-         document.querySelector('#negValueAmount').innerHTML = "Negatiivseid punkte: ";*/
        }
      },
      'list-view': {
@@ -193,8 +190,6 @@
        listOfratings.removeChild(listOfratings.lastChild);
        console.log("Viimane element kustutatud!");
        localStorage.setItem('ratings', JSON.stringify(json2));
-       //console.log(json2.length);
-
        //localStorage.clear(); // See teeb terve localStorage tühjaks
 
        var positiveCount = 0;
@@ -206,10 +201,6 @@
            negativeCount++;
          }
        }
-
-       /*console.log("pressed delete");
-       console.log(positiveCount);
-       console.log(negativeCount);*/
 
        document.querySelector('#valueAmount').innerHTML = "Kokku on loenduris punkte: " + json2.length;
        document.querySelector('#posValueAmount').innerHTML = "Positiivseid punkte: " + positiveCount;
@@ -225,9 +216,18 @@
      },
 
      modifyClick: function(event){
-       // muudan elementi
-       var x = document.getElementById("listOfratings").lastElementChild.innerHTML;
-       console.log(x);
+       var li_in_html = document.getElementById("listOfratings").lastElementChild;
+       var title = document.querySelector('.title').value;
+       var context = document.querySelector('.context').value;
+
+       li_in_html.getElementsByClassName('content')[0].innerHTML = title + " | " + context;
+
+       this.ratings[this.ratings.length-1].title = title;
+       this.ratings[this.ratings.length-1].context = context;
+
+       localStorage.setItem('ratings', JSON.stringify(this.ratings));
+       console.log("Muutmine tehtud!");
+
      },
 
      routeChange: function(event){
